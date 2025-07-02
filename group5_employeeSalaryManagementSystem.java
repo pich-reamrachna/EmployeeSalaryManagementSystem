@@ -1,5 +1,3 @@
-package work;
-
 import java.util.Scanner;
 
 public class group5_employeeSalaryManagementSystem {
@@ -54,15 +52,16 @@ public class group5_employeeSalaryManagementSystem {
                     addEmployeeDetails();
                     break;
                 case 2:
-                    // Method of Calculate Salary After Bonus
+                    calculateSalary();
                     break;
                 case 3:
                     showEmployeeDetails();
                     break;
                 case 4:
-                    // Method of Search For an Employee By ID
+                    searchEmployee();
                     break;
                 case 5:
+                    System.out.println("Exiting Program . . .");
                     System.exit(1);
                 default:
                     System.out.println("Invalid Option. Please Choose Options Between 1 to 5.");
@@ -177,6 +176,7 @@ public class group5_employeeSalaryManagementSystem {
             } catch (NumberFormatException e) {
                 System.out.println("Invalid Input. Please enter a valid number.");
             }
+        }
         
 
         // Find the correct position to insert based on ID
@@ -205,9 +205,8 @@ public class group5_employeeSalaryManagementSystem {
         salariesAfterBonuses[insertPos] = salary;
 
         count++;
-
-        }
     }
+
 
     public static void showEmployeeDetails() {
         title("Employee Records");
@@ -231,6 +230,105 @@ public class group5_employeeSalaryManagementSystem {
     }
 
     public static void calculateSalary() {
-        //functions..
+        title("Apply Bonus");
+
+        if(count == 0){
+            System.out.println("No Employees are added yet...");
+            return;
+        }
+
+        int bonusId;
+        while (true) {
+            System.out.print("Enter Search ID to give bonus >> ");
+            
+            // Get ID as string
+            String line = input.nextLine().trim(); // read line and get rid of spaces
+
+            // Check if line is empty
+            if (line.isEmpty()) {
+                System.out.println("Input cannot be empty. Please enter a valid Integer.");
+                continue; // back to start of while loop
+            }
+
+            /* Validate Integer Input */
+            try {
+                // Convert String ID to Integer ID
+                bonusId = Integer.parseInt(line);
+
+                // Check if id < 0
+                if (bonusId < 0) {
+                    System.out.println("ID cannot be negative. Please try again.");
+                    continue; // back to start of while loop
+                }
+                break;
+
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid Input. Please enter a valid integer.");
+            }
+        }
+
+        boolean found = false;
+
+        for(int z = 0; z < count; z++){
+            if(ids[z] == bonusId){
+                found = true;
+                System.out.println("===========================================");
+                System.out.print("What is the performance of employee ID: "+ bonusId+" on a scale of 1-5: ");
+                int bonusPerformanceScale = input.nextInt();
+                input.nextLine(); //Clear buffer for the if statement
+
+                double bonusPercentage = 0;
+                if(bonusPerformanceScale == 5){
+                    bonusPercentage = 20;
+                }
+                else if(bonusPerformanceScale == 4){
+                    bonusPercentage = 15;
+                }
+                else if(bonusPerformanceScale == 3){
+                    bonusPercentage = 10;
+                }
+                else{
+                    bonusPercentage = 0;
+                }
+                double oldSalary = salaries[z];
+                double bonusAmountInCash = oldSalary * (bonusPercentage / 100);
+                salariesAfterBonuses[z] = oldSalary + bonusAmountInCash; // Update salaries after the bonus
+                bonuses[z] = bonusAmountInCash; // Update bonus
+
+                System.out.println("Bonus Applied to Employee ID: "+bonusId+" Successfully.");
+                System.out.println("Bonus Received "+bonusPercentage+"%");
+                System.out.printf("Old Salary: $%.2f%n", oldSalary);
+                System.out.printf("New Salary: $%.2f%n", salariesAfterBonuses[z]);
+            }
+            
+        }
+        
+        if (!found) {
+            System.out.println("Employee Not Found. Please Enter a Valid ID");
+        }
     }
+
+    public static void searchEmployee() {
+        title("Search Employee");
+        if (count == 0) {
+            System.out.println("No employees in the system.");
+            return;
+        }
+
+        System.out.print("Enter employee ID to search: ");
+        int searchId = input.nextInt();
+        input.nextLine(); // consume newline
+
+        for (int i = 0; i < count; i++) {
+            if (ids[i] == searchId) {
+                System.out.println("Employee Found:");
+                System.out.printf("ID: %d\nName: %s\nSalary: %.2f\nBonus: %.2f\nSalary After Bonus: %.2f\n",
+                    ids[i], names[i], salaries[i], bonuses[i], salariesAfterBonuses[i]);
+                return;
+            }
+        }
+        System.out.println("Employee with ID " + searchId + " not found.");
+    }
+
+
 }
